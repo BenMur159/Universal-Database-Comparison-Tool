@@ -7,8 +7,10 @@
 
 struct RowDifferences
 {
+    RowDifferences(const std::string& row, std::size_t a, std::size_t b)
+        : canonicalRow{row}, countA{a}, countB{b}
+    {}
     std::string canonicalRow{};
-
     // How often does this row appear in the databases
     // FYI: we are not guaranteed that rows are unique
     std::size_t countA{0};

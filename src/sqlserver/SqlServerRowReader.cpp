@@ -51,6 +51,7 @@ bool SqlServerRowReader::next()
         for(int i{0}; i < count; ++i)
         {
             m_cols[i].fetched = false;  // ColState{false, ""}
+            m_cols[i].isNull = false;
             m_cols[i].value.clear();
         }
     }

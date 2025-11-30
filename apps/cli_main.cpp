@@ -14,6 +14,7 @@
 #include "util/Sqlutil.h"
 #include "DatabaseSchemaInfoTypes.h"
 #include "DatabaseSchemaBuilder.h"
+#include "TableComperator.h"
 
 std::ostream& operator<<(std::ostream& out, const TableInfo& tabInf)
 {
@@ -46,36 +47,14 @@ int main()
 
     std::unique_ptr<IDatabaseConnection> connA = makeDatabaseConnection(ConnectionConfig{"sqlite", testPath});
     auto inspectorA = connA->createSchemaInspector();
-    auto tablesNamesA = inspectorA->listAllTables();
 
-    for(const auto& tableName : tablesNamesA)
+    auto dbSchemaA = buildDatabaseSchema(*inspectorA);
+    for(auto it = dbSchemaA.tablesByName.begin(); it != dbSchemaA.tablesByName.end(); ++it)
     {
-        std::cout << tableName << "\t";
+        std::cout << it->first << "\n";
+        std::cout << it->second << "\n\n";
     }
     std::cout << "\n\n";
-
-    std::vector<TableInfo> tableInfosA{};
-    for(const auto& tableNameA : tablesNamesA )
-    {
-        tableInfosA.push_back(inspectorA->getTableInfo(tableNameA));
-    }
-    for(const auto& tabInf : tableInfosA)
-    {
-        std::cout << tabInf << "\n";
-    }
-    std::cout << "\n\n";
-
-    auto reader = connA->createRowReader({"Workplace", {}});
-
-    std::cout << "Test optional: \n";
-    while(reader->next())
-    {
-        if(!reader->getString(3))
-        {
-            std::cout << "null";
-        }
-        std::cout << *(reader->getString(3)) << "\n";
-    }
 
     std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBB\n";
 
@@ -97,7 +76,14 @@ int main()
         std::cout << it->second << "\n\n";
     }
 
+    TableInfo factoryInfoA = (dbSchemaA.tablesByName.find("Factory"))->second;
+    TableInfo factoryInfoB = (dbSchemaB.tablesByName.find("Factory"))->second;
+    std::cout << "Sanity test: A->" << factoryInfoA.name << ", B->" << factoryInfoB.name << "\n";
+    TableComparisonResult tabCompResult = compareTable(*connA, *connB, factoryInfoA, factoryInfoB);
 
-
+    for(const auto& result : tabCompResult.rowDifferences)
+    {
+        std::cout << result.canonicalRow << " - A: " << result.countA << " - B " << result.countB << "\n";
+    }
 
 }
