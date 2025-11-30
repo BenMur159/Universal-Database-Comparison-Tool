@@ -37,16 +37,12 @@ add_library(dbdiff STATIC
     include/sqlserver/SqlServerConnection.h         src/sqlserver/SqlServerConnection.cpp
     include/sqlserver/SqlServerSchemaInspector.h    src/sqlserver/SqlServerSchemaInspector.cpp
     include/sqlserver/SqlServerRowReader.h          src/sqlserver/SqlServerRowReader.cpp
-    include/sqlserver/OdbcDiagnostics.h
-    src/sqlserver/OdbcDiagnostics.cpp
+    include/sqlserver/OdbcDiagnostics.h             src/sqlserver/OdbcDiagnostics.cpp
     include/sqlserver/SqlServerRuntimeError.h
     include/DatabaseSchemaInfoTypes.h
-    include/DatabaseSchemaBuilder.h
-    src/DatabaseSchemaBuilder.cpp
+    include/DatabaseSchemaBuilder.h                 src/DatabaseSchemaBuilder.cpp
     include/DatabaseDiffReport.h
-    include/TableComperator.h
-    src/TableComperator.cpp
-
+    include/TableComperator.h                       src/TableComperator.cpp
 
 
     # adjust file list as you add more .cpps
