@@ -17,6 +17,8 @@
 #include "DatabaseSchemaInfoTypes.h"
 #include "DatabaseSchemaBuilder.h"
 #include "TableComperator.h"
+#include "TableStructureComperator.h"
+#include "DatabaseComperator.h"
 
 std::ostream& operator<<(std::ostream& out, const TableInfo& tabInf)
 {
@@ -34,6 +36,107 @@ std::ostream& operator<<(std::ostream& out, const TableInfo& tabInf)
         out << std::left << std::setw(space) << col.isPartOfPrimaryKey << "\n";
     }
     return out;
+}
+
+std::ostream& operator<<(std::ostream& os, const DatabaseDiffReport& report)
+{
+    if (report.tables.empty())
+    {
+        os << "No tables found in diff report.\n";
+        return os;
+    }
+
+    if (report.isEqual)
+    {
+        os << "Databases are equal.\n";
+    }
+    else
+    {
+        os << "Databases differ.\n";
+    }
+
+    for (const auto& table : report.tables)
+    {
+        os << "\n========================================\n";
+
+        os << "Table:\n";
+        if (!table.tableNameA.empty())
+        {
+            os << "  A: " << table.tableNameA << "\n";
+        }
+        if (!table.tableNameB.empty())
+        {
+            os << "  B: " << table.tableNameB << "\n";
+        }
+
+        os << "  Difference kind: ";
+        switch (table.diffKind)
+        {
+        case TableDiffKind::OnlyInA:
+            os << "OnlyInA\n";
+            break;
+        case TableDiffKind::OnlyInB:
+            os << "OnlyInB\n";
+            break;
+        case TableDiffKind::ColumMismatch: // adjust name if you rename the enum
+            os << "ColumnMismatch\n";
+            break;
+        case TableDiffKind::DataMismatch:  // adjust if you rename
+            os << "DataMismatch\n";
+            break;
+        case TableDiffKind::Equal:
+            os << "Equal\n";
+            break;
+        }
+
+        // For structural issues you can dump column names to help debugging
+        if (table.diffKind == TableDiffKind::ColumMismatch)
+        {
+            os << "  Columns in A:\n";
+            for (const auto& col : table.tabInfA.columns)
+            {
+                os << "    " << col.name
+                   << "  (type=" << col.dbType
+                   << ", logical=" << static_cast<int>(col.logicalType)
+                   << ", nullable=" << (col.isNullable ? "yes" : "no")
+                   << ", pk=" << (col.isPartOfPrimaryKey ? "yes" : "no")
+                   << ")\n";
+            }
+
+            os << "  Columns in B:\n";
+            for (const auto& col : table.tabInfB.columns)
+            {
+                os << "    " << col.name
+                   << "  (type=" << col.dbType
+                   << ", logical=" << static_cast<int>(col.logicalType)
+                   << ", nullable=" << (col.isNullable ? "yes" : "no")
+                   << ", pk=" << (col.isPartOfPrimaryKey ? "yes" : "no")
+                   << ")\n";
+            }
+        }
+
+        // For data mismatches, dump the differing canonical rows
+        if (table.diffKind == TableDiffKind::DataMismatch)
+        {
+            if (table.rowDiffs.empty())
+            {
+                os << "  No row differences stored, but kind is DataMissMatch.\n";
+            }
+            else
+            {
+                os << "  Row differences:\n";
+                for (const auto& row : table.rowDiffs)
+                {
+                    os << "    row=\"" << row.canonicalRow << "\"\n"
+                       << "      countA=" << row.countA
+                       << ", countB=" << row.countB << "\n";
+                }
+            }
+        }
+    }
+
+    os << "\n========================================\n";
+    return os;
 }
 
 void registerAllBackends()
@@ -87,9 +190,9 @@ int main()
     {
         std::cout << result.canonicalRow << " - A: " << result.countA << " - B " << result.countB << "\n";
     }
+    std::cout << "\n\n";
 
-    // std::string testText = "varchar(50)";
-    // std::transform(testText.begin(), testText.end(), testText.begin(),
-    //                 [](unsigned char c){ return std::toupper(c); } );
+    DatabaseDiffReport dbDiffRep = compareDatabase(*connA, *connB, dbSchemaA, dbSchemaB);
+    std::cout << dbDiffRep;
 
 }
