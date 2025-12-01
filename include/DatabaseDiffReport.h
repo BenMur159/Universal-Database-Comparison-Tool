@@ -22,8 +22,8 @@ enum class TableDiffKind
 {
     OnlyInA,
     OnlyInB,
-    ColumMissmatch,
-    DataMissMatch,
+    ColumMismatch,
+    DataMismatch,
     Equal
 };
 
