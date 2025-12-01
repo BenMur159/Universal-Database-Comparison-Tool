@@ -6,12 +6,21 @@
 #include <cstddef>
 #include <unordered_map>
 
-
+enum class LogicalType {
+    Integer,
+    Real,
+    Text,
+    Blob,
+    DateTime,
+    Boolean,
+    Other
+};
 
 struct ColumnInfo
 {
     std::string name;
     std::string dbType;
+    LogicalType logicalType{LogicalType::Other};
     bool isNullable = true;
     bool isPartOfPrimaryKey = false;
 };
