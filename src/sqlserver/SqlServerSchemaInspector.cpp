@@ -8,6 +8,7 @@
 #include <sqlext.h>
 #include <cstring>
 #include <cstddef>
+#include <algorithm>
 
 #include "sqlserver/OdbcDiagnostics.h"
 #include "sqlserver/SqlServerRuntimeError.h"
@@ -31,6 +32,35 @@ namespace{
         StmtGuard(StmtGuard&&) = delete;
         StmtGuard& operator=(StmtGuard&&) = delete;
     };
+
+    LogicalType mapDbTypeToLogicalType(std::string dbType)
+    {
+        std::transform(dbType.begin(), dbType.end(), dbType.begin(),
+                       [](unsigned char c){ return std::toupper(c); } );
+
+        if(dbType.find("INT") != std::string::npos)
+            return LogicalType::Integer;
+
+        if(dbType.find("TEXT") != std::string::npos
+            || dbType.find("CHAR") != std::string::npos
+            || dbType.find("CLOB") != std::string::npos)
+        {
+            return LogicalType::Text;
+        }
+
+        if(dbType.find("REAL") != std::string::npos
+            || dbType.find("DOUBLE") != std::string::npos
+            || dbType.find("FLOA") != std::string::npos)
+        {
+            return LogicalType::Real;
+        }
+
+        if(dbType.find("BLOB") != std::string::npos)
+            return LogicalType::Blob;
+
+        // default
+        return LogicalType::Other;
+    }
 }
 
 
@@ -326,6 +356,7 @@ TableInfo SqlServerSchemaInspector::getTableInfo(const std::string& tableName) c
         colInf.name = reinterpret_cast<const char*>(colNameBuf);
         colInf.isNullable = (std::strncmp(reinterpret_cast<const char*>(isNullableBuf), "YES", 3) == 0);
         colInf.dbType = reinterpret_cast<const char*>(colTypeBuf);
+        colInf.logicalType = mapDbTypeToLogicalType(colInf.dbType);
         colInf.isPartOfPrimaryKey = (isPkInt != 0);
         if(colInf.isPartOfPrimaryKey)
         {

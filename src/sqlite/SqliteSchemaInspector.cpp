@@ -2,10 +2,12 @@
 
 #include <stdexcept>
 #include <cstddef>
+#include <algorithm>
 
 #include "sqlite3.h"
 #include "util/Sqlutil.h"
 
+#include <iostream>
 
 
 namespace {
@@ -29,6 +31,34 @@ namespace {
         StmtGuard(StmtGuard&&) = delete;
         StmtGuard& operator=(StmtGuard&&) = delete;
     };
+
+    LogicalType mapDbTypeToLogicalType(std::string dbType)
+    {
+        std::transform(dbType.begin(), dbType.end(), dbType.begin(),
+                        [](unsigned char c){ return std::toupper(c); } );
+
+        if(dbType.find("INT") != std::string::npos)
+            return LogicalType::Integer;
+
+        if(dbType.find("TEXT") != std::string::npos
+            || dbType.find("CHAR") != std::string::npos)
+        {
+            return LogicalType::Text;
+        }
+
+        if(dbType.find("REAL") != std::string::npos
+            || dbType.find("FLOA") != std::string::npos)
+        {
+            return LogicalType::Real;
+        }
+
+        if(dbType.find("BINARY") != std::string::npos
+            || dbType.find("IMAGE") != std::string::npos)
+            return LogicalType::Blob;
+
+        // default
+        return LogicalType::Other;
+    }
 }
 
 
@@ -163,7 +193,7 @@ TableInfo SqliteSchemaInspector::getTableInfo(const std::string &tableName) cons
 
         const unsigned char* colType = sqlite3_column_text(stmt, 2);
         colInf.dbType = colType ? reinterpret_cast<const char*>(colType) : std::string{};
-
+        colInf.logicalType = mapDbTypeToLogicalType(colInf.dbType);
 
         const int notNull{sqlite3_column_int(stmt, 3)};
         const int pk{sqlite3_column_int(stmt, 5)};
