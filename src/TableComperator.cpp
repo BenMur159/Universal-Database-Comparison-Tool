@@ -35,23 +35,19 @@ namespace {
     }
 };
 
-TableComparisonResult compareTable(IDatabaseConnection &dbA, IDatabaseConnection &dbB,
+TableComparisonResult compareTableRowData(IDatabaseConnection &dbA, IDatabaseConnection &dbB,
                                    const TableInfo &tabInfA, const TableInfo &tabInfB)
 {
-    TableReadSpec tabSpecA{tabInfA.name, {}}; // empty string = * for cols
+    TableReadSpec tabSpecA{tabInfA.name}; // only name CTOR = all columns
     std::unordered_map<std::string, std::size_t> canoRowsA{};
 
     auto readerA{dbA.createRowReader(tabSpecA)};
     while(readerA->next())
     {
         std::string canonicalRowA{makeCanonicalRow(*readerA, tabInfA)};
-        if(auto it = canoRowsA.find(canonicalRowA);
-            it != canoRowsA.end())
-        {
-            ++(it->second);
-        }
-        else
-           canoRowsA.emplace(canonicalRowA, 1);
+        // iterator points to existing cell if already in map
+        auto [it, isInserted] = canoRowsA.emplace(std::move(canonicalRowA), 0);
+        ++(it->second);
     }
 
     TableReadSpec tabSpecB{tabInfB.name};
@@ -61,38 +57,31 @@ TableComparisonResult compareTable(IDatabaseConnection &dbA, IDatabaseConnection
     while(readerB->next())
     {
         std::string canonicalRowB{makeCanonicalRow(*readerB, tabInfB)};
-        if(auto it = canoRowsB.find(canonicalRowB);
-            it != canoRowsB.end())
-        {
-            ++(it->second);
-        }
-        else
-            canoRowsB.emplace(canonicalRowB, 1);
+        auto [it, isInserted] = canoRowsB.emplace(std::move(canonicalRowB), 0);
+        ++(it->second);
     }
 
     TableComparisonResult out;
-    for(auto itA = canoRowsA.begin(); itA != canoRowsA.end(); ++itA)
+    for(const auto& [row, countA] : canoRowsA)
     {
-        auto itB = canoRowsB.find(itA->first);
+        auto itB = canoRowsB.find(row);
         // not in B, only in A
         if(itB == canoRowsB.end())
         {
-            out.rowDifferences.emplace_back(itA->first, itA->second, 0);
+            out.rowDifferences.emplace_back(row, countA, 0);
         }
         // in both
-        else
+        else if(countA != itB->second)
         {
-            out.rowDifferences.emplace_back(itA->first, itA->second, itB->second);
+            out.rowDifferences.emplace_back(row, countA, itB->second);
         }
     }
-
     //not in A, only in B
-    for(auto itB = canoRowsB.begin(); itB != canoRowsB.end(); ++itB)
+    for(const auto& [row, countB] : canoRowsB)
     {
-        auto itA = canoRowsA.find(itB->first);
-        if(itA == canoRowsA.end())
+        if(!canoRowsA.count(row))
         {
-            out.rowDifferences.emplace_back(itB->first, 0, itB->second);
+            out.rowDifferences.emplace_back(row, 0, countB);
         }
     }
     return out;

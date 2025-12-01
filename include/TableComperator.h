@@ -12,7 +12,7 @@ struct TableComparisonResult
     std::vector<RowDifferences> rowDifferences;
 };
 
-TableComparisonResult compareTable(
+TableComparisonResult compareTableRowData(
     IDatabaseConnection& dbA, IDatabaseConnection& dbB,
     const TableInfo& tabInfA, const TableInfo& tabInfB
 );
