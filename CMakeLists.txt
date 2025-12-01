@@ -18,31 +18,40 @@ target_include_directories(sqlite3
 )
 
 add_library(dbdiff STATIC
+
+    # General
     include/dbdiff.h src/dbdiff.cpp
     include/IDatabaseConnection.h
     include/ISchemaInspector.h
     include/IRowReader.h
     include/ConnectionConfig.h
     include/BackendRegistry.h                       src/BackendRegistry.cpp
+    include/TableReadSpec.h
+    include/DatabaseSchemaInfoTypes.h
+    include/DatabaseSchemaBuilder.h                 src/DatabaseSchemaBuilder.cpp
+    include/DatabaseDiffReport.h
+    include/TableComperator.h                       src/TableComperator.cpp
+    include/TableStructureComperator.h              src/TableStructureComperator.cpp
+    include/DatabaseComperator.h                    src/DatabaseComperator.cpp
 
+
+    # Sqlite3
     include/sqlite/SqliteBackendFactory.h           src/sqlite/SqliteBackendFactory.cpp
     include/sqlite/SqliteConnection.h               src/sqlite/SqliteConnection.cpp
     include/sqlite/SqliteSchemaInspector.h          src/sqlite/SqliteSchemaInspector.cpp
     include/sqlite/SqliteRowReader.h                src/sqlite/SqliteRowReader.cpp
     include/util/Sqlutil.h                          src/util/Sqlutil.cpp
 
-    include/TableReadSpec.h
 
+    #SqlServer
     include/sqlserver/SqlServerBackendFactory.h     src/sqlserver/SqlServerBackendFactory.cpp
     include/sqlserver/SqlServerConnection.h         src/sqlserver/SqlServerConnection.cpp
     include/sqlserver/SqlServerSchemaInspector.h    src/sqlserver/SqlServerSchemaInspector.cpp
     include/sqlserver/SqlServerRowReader.h          src/sqlserver/SqlServerRowReader.cpp
     include/sqlserver/OdbcDiagnostics.h             src/sqlserver/OdbcDiagnostics.cpp
     include/sqlserver/SqlServerRuntimeError.h
-    include/DatabaseSchemaInfoTypes.h
-    include/DatabaseSchemaBuilder.h                 src/DatabaseSchemaBuilder.cpp
-    include/DatabaseDiffReport.h
-    include/TableComperator.h                       src/TableComperator.cpp
+
+
 
 
     # adjust file list as you add more .cpps

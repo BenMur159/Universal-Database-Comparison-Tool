@@ -2,6 +2,8 @@
 #include <memory>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
+#include <cctype>
 
 #include "ConnectionConfig.h"
 #include "BackendRegistry.h"
@@ -79,11 +81,15 @@ int main()
     TableInfo factoryInfoA = (dbSchemaA.tablesByName.find("Factory"))->second;
     TableInfo factoryInfoB = (dbSchemaB.tablesByName.find("Factory"))->second;
     std::cout << "Sanity test: A->" << factoryInfoA.name << ", B->" << factoryInfoB.name << "\n";
-    TableComparisonResult tabCompResult = compareTable(*connA, *connB, factoryInfoA, factoryInfoB);
+    TableComparisonResult tabCompResult = compareTableRowData(*connA, *connB, factoryInfoA, factoryInfoB);
 
     for(const auto& result : tabCompResult.rowDifferences)
     {
         std::cout << result.canonicalRow << " - A: " << result.countA << " - B " << result.countB << "\n";
     }
+
+    // std::string testText = "varchar(50)";
+    // std::transform(testText.begin(), testText.end(), testText.begin(),
+    //                 [](unsigned char c){ return std::toupper(c); } );
 
 }

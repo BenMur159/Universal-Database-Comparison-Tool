@@ -1,12 +1,12 @@
-#include "SchemaComperator.h"
+#include "TableStructureComperator.h"
 
-SchemaDiffResult compareTableSchema(const TableInfo &tabInfA, const TableInfo &tabInfB)
+TableStructureDiffResult compareTableStructure(const TableInfo &tabInfA, const TableInfo &tabInfB)
 {
-    SchemaDiffResult result{};
+    TableStructureDiffResult result{};
     // column count issue
     if(tabInfA.columns.size() != tabInfB.columns.size())
     {
-        result.issues.emplace_back(SchemaIssue{SchemaIssueKind::ColumnCountMismatch});
+        result.issues.emplace_back(StructureIssue{StructureIssueKind::ColumnCountMismatch});
         return result;
     }
 
@@ -16,7 +16,7 @@ SchemaDiffResult compareTableSchema(const TableInfo &tabInfA, const TableInfo &t
     {
         if(tabInfA.columns[col].name != tabInfB.columns[col].name)
         {
-            result.issues.emplace_back(SchemaIssue{SchemaIssueKind::ColumnNameMisMatch, col});
+            result.issues.emplace_back(StructureIssue{StructureIssueKind::ColumnNameMisMatch, col});
         }
     }
     if(!result.isEqual())
@@ -27,7 +27,7 @@ SchemaDiffResult compareTableSchema(const TableInfo &tabInfA, const TableInfo &t
     {
         if(tabInfA.columns[col].logicalType != tabInfB.columns[col].logicalType)
         {
-            result.issues.emplace_back(SchemaIssue{SchemaIssueKind::ColumnTypeMisMatch, col});
+            result.issues.emplace_back(StructureIssue{StructureIssueKind::ColumnTypeMisMatch, col});
         }
     }
     if(!result.isEqual())
@@ -37,7 +37,7 @@ SchemaDiffResult compareTableSchema(const TableInfo &tabInfA, const TableInfo &t
     {
         if(tabInfA.columns[col].isNullable != tabInfB.columns[col].isNullable)
         {
-            result.issues.emplace_back(SchemaIssue{SchemaIssueKind::NullabilityMismatch, col});
+            result.issues.emplace_back(StructureIssue{StructureIssueKind::NullabilityMismatch, col});
         }
     }
 
@@ -48,7 +48,7 @@ SchemaDiffResult compareTableSchema(const TableInfo &tabInfA, const TableInfo &t
     {
         if(tabInfA.columns[col].isPartOfPrimaryKey != tabInfB.columns[col].isPartOfPrimaryKey)
         {
-            result.issues.emplace_back(SchemaIssue{SchemaIssueKind::PrimaryKeyMismatch, col});
+            result.issues.emplace_back(StructureIssue{StructureIssueKind::PrimaryKeyMismatch, col});
         }
     }
 
