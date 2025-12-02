@@ -28,6 +28,7 @@ namespace BackendRegistry {
 
     void registerBackend(const std::string& databaseType, std::unique_ptr<IDatabaseBackendFactory> factory);
     IDatabaseBackendFactory& getBackendFactory(const std::string& databaseType);
+    bool isEmpty();
 }
 
 std::unique_ptr<IDatabaseConnection>makeDatabaseConnection(const ConnectionConfig& cfg);
