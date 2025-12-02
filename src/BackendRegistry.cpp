@@ -26,6 +26,10 @@ namespace BackendRegistry {
         }
         return *(it->second);
     }
+    bool isEmpty()
+    {
+        return g_factories.empty();
+    }
 }
 
 std::unique_ptr<IDatabaseConnection>
