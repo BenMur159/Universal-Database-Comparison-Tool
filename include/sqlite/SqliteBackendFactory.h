@@ -5,18 +5,20 @@
 
 #include "BackendRegistry.h"
 
-class IDatabaseConnection;
-struct ConnectionConfig;
+// class IDatabaseConnection;
+// struct ConnectionConfig;
 
-class SqliteBackendFactory : public IDatabaseBackendFactory
-{
-public:
-    SqliteBackendFactory() = default;
-    ~SqliteBackendFactory() override = default;
+// class SqliteBackendFactory : public IDatabaseBackendFactory
+// {
+// public:
+//     SqliteBackendFactory() = default;
+//     ~SqliteBackendFactory() override = default;
 
-    std::unique_ptr<IDatabaseConnection> createConnection(const ConnectionConfig& cfg) override;
+//     std::unique_ptr<IDatabaseConnection> createConnection(const ConnectionConfig& cfg) override;
 
 
-};
+// };
+
+void registerSqliteBackend();
 
 #endif // SQLITEBACKENDFACTORY_H
