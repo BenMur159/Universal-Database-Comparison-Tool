@@ -26,22 +26,28 @@ DatabaseDiffReport compareDatabase(IDatabaseConnection &connA, IDatabaseConnecti
         tabDiffRep.tableNameA = nameA;
         tabDiffRep.tableNameB = nameA; // or itB->first;
         const auto& tabInfB{itB->second};
-        const TableStructureDiffResult tabStrucDiff = compareTableStructure(tabInfA, tabInfB);
+        TableStructureDiffResult tabStrucDiff = compareTableStructure(tabInfA, tabInfB);
         if(!tabStrucDiff.isEqual())
         {
             tabDiffRep.diffKind = TableDiffKind::ColumMismatch;
-            // later we could implement a specific missmatch here;
+            tabDiffRep.strucDiff = std::move(tabStrucDiff);
+            tabDiffRep.tabInfA = tabInfA;
+            tabDiffRep.tabInfB = tabInfB;
+
             dbDiffRep.tables.push_back(std::move(tabDiffRep));
             dbDiffRep.isEqual = false;
 
             continue;
         }
         // In A and B -> Row Data Comparison
-        const TableComparisonResult rowDiff = compareTableRowData(connA, connB, tabInfA, tabInfB);
+        TableComparisonResult rowDiff = compareTableRowData(connA, connB, tabInfA, tabInfB);
         if(!rowDiff.rowDifferences.empty())
         {
             tabDiffRep.diffKind = TableDiffKind::DataMismatch;
             tabDiffRep.rowDiffs = std::move(rowDiff.rowDifferences);
+            tabDiffRep.tabInfA = tabInfA;
+            tabDiffRep.tabInfB = tabInfB;
+
             dbDiffRep.tables.push_back(std::move(tabDiffRep));
             dbDiffRep.isEqual = false;
 

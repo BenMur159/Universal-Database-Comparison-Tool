@@ -3,7 +3,10 @@
 
 #include <string>
 #include <vector>
+#include <optional>
+
 #include "DatabaseSchemaInfoTypes.h"
+#include "TableStructureComperator.h"
 
 struct RowDifferences
 {
@@ -37,6 +40,7 @@ struct TableDiffReport
     TableInfo tabInfA{};
     TableInfo tabInfB{};
 
+    std::optional<TableStructureDiffResult> strucDiff{};
     // only not empty when DataMissMatch;
     std::vector<RowDifferences> rowDiffs{};
 };

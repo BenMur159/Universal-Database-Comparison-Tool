@@ -78,10 +78,10 @@ std::ostream& operator<<(std::ostream& os, const DatabaseDiffReport& report)
         case TableDiffKind::OnlyInB:
             os << "OnlyInB\n";
             break;
-        case TableDiffKind::ColumMismatch: // adjust name if you rename the enum
+        case TableDiffKind::ColumMismatch:   // rename to ColumnMismatch in your enum
             os << "ColumnMismatch\n";
             break;
-        case TableDiffKind::DataMismatch:  // adjust if you rename
+        case TableDiffKind::DataMismatch:
             os << "DataMismatch\n";
             break;
         case TableDiffKind::Equal:
@@ -89,38 +89,133 @@ std::ostream& operator<<(std::ostream& os, const DatabaseDiffReport& report)
             break;
         }
 
-        // For structural issues you can dump column names to help debugging
+        // ---------- Schema / column mismatches ----------
         if (table.diffKind == TableDiffKind::ColumMismatch)
         {
-            os << "  Columns in A:\n";
-            for (const auto& col : table.tabInfA.columns)
-            {
-                os << "    " << col.name
-                   << "  (type=" << col.dbType
-                   << ", logical=" << static_cast<int>(col.logicalType)
-                   << ", nullable=" << (col.isNullable ? "yes" : "no")
-                   << ", pk=" << (col.isPartOfPrimaryKey ? "yes" : "no")
-                   << ")\n";
-            }
+            os << "  Schema differences:\n";
 
-            os << "  Columns in B:\n";
-            for (const auto& col : table.tabInfB.columns)
+            if (!table.strucDiff.has_value())
             {
-                os << "    " << col.name
-                   << "  (type=" << col.dbType
-                   << ", logical=" << static_cast<int>(col.logicalType)
-                   << ", nullable=" << (col.isNullable ? "yes" : "no")
-                   << ", pk=" << (col.isPartOfPrimaryKey ? "yes" : "no")
-                   << ")\n";
+                os << "    (no detailed structure diff stored)\n";
+            }
+            else
+            {
+                const auto& diff = *table.strucDiff;
+
+                if (diff.issues.empty())
+                {
+                    os << "    (no issues listed, but kind is ColumnMismatch)\n";
+                }
+                else
+                {
+                    for (const auto& issue : diff.issues)
+                    {
+                        switch (issue.kind)
+                        {
+                        case StructureIssueKind::ColumnCountMismatch:
+                        {
+                            const auto colsA = table.tabInfA.columns.size();
+                            const auto colsB = table.tabInfB.columns.size();
+                            os << "    Column count mismatch: A has " << colsA
+                               << " columns, B has " << colsB << " columns.\n";
+                            break;
+                        }
+                        case StructureIssueKind::ColumnNameMismatch:
+                        {
+                            const int idx = issue.columnIndex;
+                            os << "    Column " << idx << " name mismatch: ";
+                            if (idx >= 0 &&
+                                static_cast<std::size_t>(idx) < table.tabInfA.columns.size() &&
+                                static_cast<std::size_t>(idx) < table.tabInfB.columns.size())
+                            {
+                                const auto& colA = table.tabInfA.columns[static_cast<std::size_t>(idx)];
+                                const auto& colB = table.tabInfB.columns[static_cast<std::size_t>(idx)];
+                                os << "A=\"" << colA.name << "\", "
+                                   << "B=\"" << colB.name << "\"\n";
+                            }
+                            else
+                            {
+                                os << "(index out of range in TableInfo)\n";
+                            }
+                            break;
+                        }
+                        case StructureIssueKind::ColumnTypeMismatch:
+                        {
+                            const int idx = issue.columnIndex;
+                            os << "    Column " << idx << " type mismatch: ";
+                            if (idx >= 0 &&
+                                static_cast<std::size_t>(idx) < table.tabInfA.columns.size() &&
+                                static_cast<std::size_t>(idx) < table.tabInfB.columns.size())
+                            {
+                                const auto& colA = table.tabInfA.columns[static_cast<std::size_t>(idx)];
+                                const auto& colB = table.tabInfB.columns[static_cast<std::size_t>(idx)];
+                                os << "A(dbType=\"" << colA.dbType
+                                   << "\", logical=" << static_cast<int>(colA.logicalType) << "), "
+                                   << "B(dbType=\"" << colB.dbType
+                                   << "\", logical=" << static_cast<int>(colB.logicalType) << ")\n";
+                            }
+                            else
+                            {
+                                os << "(index out of range in TableInfo)\n";
+                            }
+                            break;
+                        }
+                        case StructureIssueKind::NullabilityMismatch:
+                        {
+                            const int idx = issue.columnIndex;
+                            os << "    Column " << idx << " nullability mismatch: ";
+                            if (idx >= 0 &&
+                                static_cast<std::size_t>(idx) < table.tabInfA.columns.size() &&
+                                static_cast<std::size_t>(idx) < table.tabInfB.columns.size())
+                            {
+                                const auto& colA = table.tabInfA.columns[static_cast<std::size_t>(idx)];
+                                const auto& colB = table.tabInfB.columns[static_cast<std::size_t>(idx)];
+                                os << "A is " << (colA.isNullable ? "" : "NOT ")
+                                   << "NULLABLE, "
+                                   << "B is " << (colB.isNullable ? "" : "NOT ")
+                                   << "NULLABLE.\n";
+                            }
+                            else
+                            {
+                                os << "(index out of range in TableInfo)\n";
+                            }
+                            break;
+                        }
+                        case StructureIssueKind::PrimaryKeyMismatch:
+                        {
+                            const int idx = issue.columnIndex;
+                            os << "    Column " << idx << " primary key membership mismatch: ";
+                            if (idx >= 0 &&
+                                static_cast<std::size_t>(idx) < table.tabInfA.columns.size() &&
+                                static_cast<std::size_t>(idx) < table.tabInfB.columns.size())
+                            {
+                                const auto& colA = table.tabInfA.columns[static_cast<std::size_t>(idx)];
+                                const auto& colB = table.tabInfB.columns[static_cast<std::size_t>(idx)];
+                                os << "A is " << (colA.isPartOfPrimaryKey ? "" : "NOT ")
+                                   << "part of PK, "
+                                   << "B is " << (colB.isPartOfPrimaryKey ? "" : "NOT ")
+                                   << "part of PK.\n";
+                            }
+                            else
+                            {
+                                os << "(index out of range in TableInfo)\n";
+                            }
+                            break;
+                        }
+                        default:
+                            os << "Equal?!";
+                        }
+                    }
+                }
             }
         }
 
-        // For data mismatches, dump the differing canonical rows
+        // ---------- Data mismatches ----------
         if (table.diffKind == TableDiffKind::DataMismatch)
         {
             if (table.rowDiffs.empty())
             {
-                os << "  No row differences stored, but kind is DataMissMatch.\n";
+                os << "  No row differences stored, but kind is DataMismatch.\n";
             }
             else
             {

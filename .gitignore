@@ -84,3 +84,4 @@ CMakeLists.txt.user*
 # User defined
 build/
 .qtcreator/
+Examples/
