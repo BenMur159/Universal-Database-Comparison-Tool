@@ -16,7 +16,7 @@ TableStructureDiffResult compareTableStructure(const TableInfo &tabInfA, const T
     {
         if(tabInfA.columns[col].name != tabInfB.columns[col].name)
         {
-            result.issues.emplace_back(StructureIssue{StructureIssueKind::ColumnNameMisMatch, col});
+            result.issues.emplace_back(StructureIssue{StructureIssueKind::ColumnNameMismatch, col});
         }
     }
     if(!result.isEqual())
@@ -27,7 +27,7 @@ TableStructureDiffResult compareTableStructure(const TableInfo &tabInfA, const T
     {
         if(tabInfA.columns[col].logicalType != tabInfB.columns[col].logicalType)
         {
-            result.issues.emplace_back(StructureIssue{StructureIssueKind::ColumnTypeMisMatch, col});
+            result.issues.emplace_back(StructureIssue{StructureIssueKind::ColumnTypeMismatch, col});
         }
     }
     if(!result.isEqual())

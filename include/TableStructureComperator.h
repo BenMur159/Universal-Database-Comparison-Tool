@@ -9,8 +9,8 @@ enum class StructureIssueKind
 {
     Equal,
     ColumnCountMismatch,
-    ColumnNameMisMatch,
-    ColumnTypeMisMatch,
+    ColumnNameMismatch,
+    ColumnTypeMismatch,
     NullabilityMismatch,
     PrimaryKeyMismatch
 };
