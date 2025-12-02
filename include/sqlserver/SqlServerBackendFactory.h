@@ -1,6 +1,0 @@
-#ifndef SQLSERVERBACKENDFACTORY_H
-#define SQLSERVERBACKENDFACTORY_H
-
-void registerSqlServerBackend();
-
-#endif // SQLSERVERBACKENDFACTORY_H

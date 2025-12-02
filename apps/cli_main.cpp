@@ -7,8 +7,8 @@
 
 #include "ConnectionConfig.h"
 #include "BackendRegistry.h"
-#include "sqlite/SqliteBackendFactory.h"
-#include "sqlserver/SqlServerBackendFactory.h"
+#include "sqlite/SqliteBackend.h"
+#include "sqlserver/SqlServerBackend.h"
 #include "IDatabaseConnection.h"
 #include "ISchemaInspector.h"
 #include "IRowReader.h"
@@ -236,8 +236,10 @@ std::ostream& operator<<(std::ostream& os, const DatabaseDiffReport& report)
 
 void registerAllBackends()
 {
-    BackendRegistry::registerBackend("sqlite", std::make_unique<SqliteBackendFactory>());
-    BackendRegistry::registerBackend("sqlserver", std::make_unique<SqlServerBackendFactory>());
+    // BackendRegistry::registerBackend("sqlite", std::make_unique<SqliteBackendFactory>());
+    // BackendRegistry::registerBackend("sqlserver", std::make_unique<SqlServerBackendFactory>());
+    registerSqliteBackend();
+    registerSqlServerBackend();
 }
 
 int main()

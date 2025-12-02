@@ -1,4 +1,4 @@
-#include "sqlite/SqliteBackendFactory.h"
+#include "sqlite/SqliteBackend.h"
 
 #include <memory>
 

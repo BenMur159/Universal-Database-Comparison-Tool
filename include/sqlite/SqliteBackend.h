@@ -1,5 +1,5 @@
-#ifndef SQLITEBACKENDFACTORY_H
-#define SQLITEBACKENDFACTORY_H
+#ifndef SQLITEBACKEND_H
+#define SQLITEBACKEND_H
 
 #include <memory>
 
@@ -21,4 +21,4 @@
 
 void registerSqliteBackend();
 
-#endif // SQLITEBACKENDFACTORY_H
+#endif // SQLITEBACKEND_H
