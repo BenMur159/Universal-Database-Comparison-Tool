@@ -2,7 +2,7 @@
 #define DATABASESCHEMABUILDER_H
 
 #include "ISchemaInspector.h"
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 
 DatabaseSchema buildDatabaseSchema(ISchemaInspector& inspector);
 

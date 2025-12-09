@@ -1,5 +1,5 @@
 #include "DatabaseComperator.h"
-#include "TableStructureComperator.h"
+#include "dbdiff/TableStructureComperator.h"
 #include "TableComperator.h"
 
 DatabaseDiffReport compareDatabase(IDatabaseConnection &connA, IDatabaseConnection &connB,

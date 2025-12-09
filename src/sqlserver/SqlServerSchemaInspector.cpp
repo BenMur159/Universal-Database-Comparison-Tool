@@ -12,7 +12,7 @@
 
 #include "sqlserver/OdbcDiagnostics.h"
 #include "sqlserver/SqlServerRuntimeError.h"
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 
 namespace{
     struct StmtGuard{
@@ -54,8 +54,8 @@ namespace{
         {
             return LogicalType::Real;
         }
-
-        if(dbType.find("BLOB") != std::string::npos)
+        if(dbType.find("BINARY") != std::string::npos
+            || dbType.find("IMAGE") != std::string::npos)
             return LogicalType::Blob;
 
         // default

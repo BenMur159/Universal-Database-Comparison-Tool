@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ISchemaInspector.h"
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 
 typedef void* SQLHDBC;
 

@@ -1,25 +1,9 @@
 
-#include <memory>
 #include <iostream>
 #include <iomanip>
-#include <algorithm>
 #include <cctype>
 
-#include "ConnectionConfig.h"
-#include "BackendRegistry.h"
-#include "sqlite/SqliteBackend.h"
-#include "sqlserver/SqlServerBackend.h"
-#include "IDatabaseConnection.h"
-#include "ISchemaInspector.h"
-#include "IRowReader.h"
-#include "TableReadSpec.h"
-#include "util/Sqlutil.h"
-#include "DatabaseSchemaInfoTypes.h"
-#include "DatabaseSchemaBuilder.h"
-#include "TableComperator.h"
-#include "TableStructureComperator.h"
-#include "DatabaseComperator.h"
-#include "ComparisonRunner.h"
+#include "dbdiff/dbdiff.h"
 
 std::ostream& operator<<(std::ostream& out, const TableInfo& tabInf)
 {
@@ -238,17 +222,28 @@ std::ostream& operator<<(std::ostream& os, const DatabaseDiffReport& report)
 
 int main()
 {
-    std::string testConStrA = "C:/Users/43676/source/repos/JhChallenge/examples/MyExample1.db";
+    /*
+     *  "C:/Users/43676/source/repos/JhChallenge/examples/MyExample1.db";
+     */
+    std::string testConStrA ="C:/Users/43676/Documents/QtProjects/dbdiff/Examples/Sqlite3TestDb.db";
+
     ConnectionConfig testSqliteCfg{ "sqlite", testConStrA };
 
     std::string testConStrB =
                 "Driver={ODBC Driver 17 for SQL Server};"
                 "Server=B_MUR,50532;"                 // or .\\SQLEXPRESS, or MACHINENAME\\SQLEXPRESS
-                "Database=dbdiff_test;"
+                "Database=SqlServerTestDb;"
                 "Trusted_Connection=yes;";  // or UID=...;PWD=...;
     ConnectionConfig testSqlServerCfg{ "sqlserver", testConStrB };
 
+    std::string testConStrC =
+        "Driver={ODBC Driver 17 for SQL Server};"
+        "Server=B_MUR,50532;"                 // or .\\SQLEXPRESS, or MACHINENAME\\SQLEXPRESS
+        "Database=SqlServerTestDb;"
+        "Trusted_Connection=yes;";  // or UID=...;PWD=...;
+    ConnectionConfig testSqlServerCfg2{ "sqlserver", testConStrC };
 
-    DatabaseDiffReport dbDiffRep = runDatabaseComparison(testSqliteCfg, testSqlServerCfg);
+
+    DatabaseDiffReport dbDiffRep = runDatabaseComparison(testSqlServerCfg, testSqliteCfg);
     std::cout << dbDiffRep;
 }

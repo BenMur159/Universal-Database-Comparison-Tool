@@ -5,7 +5,7 @@
 #include "BackendRegistry.h"
 #include "sqlserver/SqlServerConnection.h"
 #include "IDatabaseConnection.h"
-#include "ConnectionConfig.h"
+#include "dbdiff/ConnectionConfig.h"
 
 namespace{
     class SqlServerBackendFactory : public IDatabaseBackendFactory

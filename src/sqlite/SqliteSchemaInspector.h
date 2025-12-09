@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ISchemaInspector.h"
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 
 class SqliteConnection;
 struct sqlite3;

@@ -8,6 +8,9 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# -------------------------------
+# sqlite3 static library
+# -------------------------------
 add_library(sqlite3 STATIC
     external/sqlite3/sqlite3.c
 )
@@ -17,52 +20,85 @@ target_include_directories(sqlite3
         ${CMAKE_CURRENT_SOURCE_DIR}/external/sqlite3/include
 )
 
+# -------------------------------
+# dbdiff static library
+# -------------------------------
+
+set(DBDIFF_PUBLIC_HEADERS
+    include/dbdiff/dbdiff.h
+    include/dbdiff/ConnectionConfig.h
+    include/dbdiff/DatabaseDiffReport.h
+    include/dbdiff/DatabaseSchemaInfoTypes.h
+    include/dbdiff/TableStructureComperator.h
+    include/dbdiff/ComparisonRunner.h
+
+)
+
+set(DBDIFF_INTERNAL_HEADERS
+    # General core
+    src/TableReadSpec.h
+    src/TableComperator.h
+    src/DatabaseSchemaBuilder.h
+    src/IDatabaseConnection.h
+    src/IRowReader.h
+    src/ISchemaInspector.h
+    src/BackendRegistry.h
+    src/DatabaseComperator.h
+
+    # Sqlite backend
+    src/sqlite/SqliteBackend.h
+    src/sqlite/SqliteConnection.h
+    src/sqlite/SqliteSchemaInspector.h
+    src/sqlite/SqliteRowReader.h
+    src/util/Sqlutil.h
+
+    # SQL Server backend
+    src/sqlserver/SqlServerBackend.h
+    src/sqlserver/SqlServerConnection.h
+    src/sqlserver/SqlServerSchemaInspector.h
+    src/sqlserver/SqlServerRowReader.h
+    src/sqlserver/OdbcDiagnostics.h
+)
+
+
+set(DBDIFF_SOURCES
+    # General core
+
+    src/BackendRegistry.cpp
+    src/DatabaseSchemaBuilder.cpp
+    src/DatabaseComperator.cpp
+    src/TableComperator.cpp
+    src/TableStructureComperator.cpp
+    src/ComparisonRunner.cpp
+
+    # Sqlite backend
+    src/sqlite/SqliteBackend.cpp
+    src/sqlite/SqliteConnection.cpp
+    src/sqlite/SqliteSchemaInspector.cpp
+    src/sqlite/SqliteRowReader.cpp
+    src/util/Sqlutil.cpp
+
+    # SQL Server backend
+    src/sqlserver/SqlServerBackend.cpp
+    src/sqlserver/SqlServerConnection.cpp
+    src/sqlserver/SqlServerSchemaInspector.cpp
+    src/sqlserver/SqlServerRowReader.cpp
+    src/sqlserver/OdbcDiagnostics.cpp
+
+)
+
 add_library(dbdiff STATIC
-
-
-    #Interfaces
-    include/IDatabaseConnection.h
-    include/ISchemaInspector.h
-    include/IRowReader.h
-
-    # Sqlite3
-    include/sqlite/SqliteBackend.h                  src/sqlite/SqliteBackend.cpp
-    include/sqlite/SqliteConnection.h               src/sqlite/SqliteConnection.cpp
-    include/sqlite/SqliteSchemaInspector.h          src/sqlite/SqliteSchemaInspector.cpp
-    include/sqlite/SqliteRowReader.h                src/sqlite/SqliteRowReader.cpp
-    include/util/Sqlutil.h                          src/util/Sqlutil.cpp
-
-    #SqlServer
-    include/sqlserver/SqlServerBackend.h            src/sqlserver/SqlServerBackend.cpp
-    include/sqlserver/SqlServerConnection.h         src/sqlserver/SqlServerConnection.cpp
-    include/sqlserver/SqlServerSchemaInspector.h    src/sqlserver/SqlServerSchemaInspector.cpp
-    include/sqlserver/SqlServerRowReader.h          src/sqlserver/SqlServerRowReader.cpp
-    include/sqlserver/OdbcDiagnostics.h             src/sqlserver/OdbcDiagnostics.cpp
-    include/sqlserver/SqlServerRuntimeError.h
-
-    #Comparison logic
-    include/DatabaseComperator.h                    src/DatabaseComperator.cpp
-    include/TableComperator.h                       src/TableComperator.cpp
-    include/TableStructureComperator.h              src/TableStructureComperator.cpp
-
-
-    # General
-    include/dbdiff.h src/dbdiff.cpp
-    include/ConnectionConfig.h
-    include/BackendRegistry.h                       src/BackendRegistry.cpp
-    include/TableReadSpec.h
-    include/DatabaseSchemaInfoTypes.h
-    include/DatabaseSchemaBuilder.h                 src/DatabaseSchemaBuilder.cpp
-    include/DatabaseDiffReport.h
-    include/ComparisonRunner.h                      src/ComparisonRunner.cpp
-
-    # adjust file list as you add more .cpps
+    ${DBDIFF_PUBLIC_HEADERS}
+    ${DBDIFF_INTERNAL_HEADERS}
+    ${DBDIFF_SOURCES}
 )
 
 # Public headers for consumers of the library
 target_include_directories(dbdiff
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 

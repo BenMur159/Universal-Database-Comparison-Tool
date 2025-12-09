@@ -2,8 +2,8 @@
 #define DATABASECOMPERATOR_H
 
 #include "IDatabaseConnection.h"
-#include "DatabaseDiffReport.h"
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseDiffReport.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 
 DatabaseDiffReport compareDatabase(IDatabaseConnection& connA, IDatabaseConnection& connB,
                                    const DatabaseSchema& dbSchemaA, const DatabaseSchema& dbSchemaB);

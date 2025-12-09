@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "DatabaseSchemaInfoTypes.h"
-#include "DatabaseDiffReport.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseDiffReport.h"
 #include "IDatabaseConnection.h"
 
 struct TableComparisonResult

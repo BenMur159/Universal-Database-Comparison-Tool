@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 
 enum class StructureIssueKind
 {

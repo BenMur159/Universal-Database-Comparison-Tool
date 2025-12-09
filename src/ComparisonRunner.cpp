@@ -1,11 +1,11 @@
-#include "ComparisonRunner.h"
+#include "dbdiff/ComparisonRunner.h"
 
 #include "BackendRegistry.h"
 #include "sqlite/SqliteBackend.h"
 #include "sqlserver/SqlServerBackend.h"
 #include "IDatabaseConnection.h"
 #include "ISchemaInspector.h"
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 #include "DatabaseSchemaBuilder.h"
 #include "DatabaseComperator.h"
 

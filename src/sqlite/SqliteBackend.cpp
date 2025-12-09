@@ -4,7 +4,7 @@
 
 #include "BackendRegistry.h"
 #include "IDatabaseConnection.h"
-#include "ConnectionConfig.h"
+#include "dbdiff/ConnectionConfig.h"
 #include "sqlite/SqliteConnection.h"
 
 namespace{

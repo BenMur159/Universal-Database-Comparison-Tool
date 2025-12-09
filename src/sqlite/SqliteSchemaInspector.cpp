@@ -52,8 +52,7 @@ namespace {
             return LogicalType::Real;
         }
 
-        if(dbType.find("BINARY") != std::string::npos
-            || dbType.find("IMAGE") != std::string::npos)
+        if(dbType.find("BLOB") != std::string::npos)
             return LogicalType::Blob;
 
         // default

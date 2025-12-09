@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "DatabaseSchemaInfoTypes.h"
+#include "dbdiff/DatabaseSchemaInfoTypes.h"
 
 class ISchemaInspector
 {

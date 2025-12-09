@@ -1,8 +1,8 @@
 #ifndef COMPARISONRUNNER_H
 #define COMPARISONRUNNER_H
 
-#include "ConnectionConfig.h"
-#include "DatabaseDiffReport.h"
+#include "dbdiff/ConnectionConfig.h"
+#include "dbdiff/DatabaseDiffReport.h"
 
 void registerAllBuiltInBackends();
 

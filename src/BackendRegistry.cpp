@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 #include "IDatabaseConnection.h"
-#include "ConnectionConfig.h"
+#include "dbdiff/ConnectionConfig.h"
 
 namespace BackendRegistry {
     // FYI: anonymous namespace for only internal linkage
